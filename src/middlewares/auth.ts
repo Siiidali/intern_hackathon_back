@@ -4,10 +4,11 @@ import ApiError from '../utils/ApiError';
 import { roleRights } from '../config/roles';
 import { NextFunction, Request, Response } from 'express';
 import { User } from '@prisma/client';
+import { AuthRequest } from '../types/authRequest';
 
 const verifyCallback =
   (
-    req: any,
+    req: AuthRequest,
     resolve: (value?: unknown) => void,
     reject: (reason?: unknown) => void,
     requiredRights: string[]

@@ -65,7 +65,8 @@ const uploadFasta = (req: AuthRequest, res: Response, next: NextFunction) => {
     }
 
     // You can process the file here or pass it to the next middleware
-    (req as any).fastaFile = req.file;
+    (req as any).fastaFileName = nameFileUserDate;
+    (req as any).fastaFilePath = req.file;
     next();
   });
 };

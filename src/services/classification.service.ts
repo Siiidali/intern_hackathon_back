@@ -1,6 +1,18 @@
 import axios from 'axios';
 import config from '../config/config';
+import { ModelResponse } from '../types/modelResponse';
+import userService from './user.service';
+import prisma from '../client';
+class CustomError extends Error {
+  status?: number;
+  data?: any;
 
+  constructor(message: string, status?: number, data?: any) {
+    super(message);
+    this.status = status;
+    this.data = data;
+  }
+}
 const { apiUrl } = config.model;
 
 const classifyProteinSequence = async (file: any) => {
@@ -26,17 +38,28 @@ const classifyProteinSequence = async (file: any) => {
   }
 };
 
-class CustomError extends Error {
-  status?: number;
-  data?: any;
+const addProteinSequenceToUserHistory = async (
+  userId: string,
+  fastaFileName: string,
+  data: ModelResponse
+) => {
+  try {
+    const user = userService.getUserById(userId);
+    if (!user) {
+      throw new CustomError('User not found', 404);
+    }
 
-  constructor(message: string, status?: number, data?: any) {
-    super(message);
-    this.status = status;
-    this.data = data;
-  }
-}
+    await prisma.userHistory.create({
+      data: {
+        userId,
+        fastaFileName,
+        ...data
+      }
+    });
+  } catch (error: any) {}
+};
 
 export default {
-  classifyProteinSequence
+  classifyProteinSequence,
+  addProteinSequenceToUserHistory
 };
